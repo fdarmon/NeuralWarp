@@ -1,0 +1,17 @@
+imageio==2.9.0
+matplotlib==3.4.2
+numpy==1.21.2
+open3d==0.13.0
+opencv_python==4.5.3.56
+Pillow==8.4.0
+plotly==5.1.0
+pyhocon==0.3.58
+pytorch3d==0.5.0
+scikit_image==0.18.2
+scikit_learn==1.0.1
+scipy==1.7.1
+skimage==0.0
+torch==1.9.0
+torchvision==0.10.0
+tqdm==4.62.3
+trimesh==3.9.26
