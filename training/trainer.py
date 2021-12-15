@@ -3,8 +3,7 @@ from datetime import datetime
 from pyhocon import ConfigFactory
 import sys
 import torch
-import time
-from model.loss import Loss
+from training.loss import Loss
 from model.neuralWarp import NeuralWarp
 from pathlib import Path
 from datasets.scene_dataset import SceneDataset
@@ -27,23 +26,17 @@ class Trainer():
         self.debug = kwargs["debug"]
 
         self.conf = ConfigFactory.parse_file(kwargs['conf'])
-        self.batch_size = kwargs['batch_size']
-        self.expname = Path(kwargs["conf"]).with_suffix("").name + kwargs['expname']
+        self.expname = Path(kwargs["conf"]).with_suffix("").name
         self.exps_folder_name = Path("exps")
-        if len(Path(kwargs["conf"]).parents) == 3:
-            self.exps_folder_name = self.exps_folder_name / Path(kwargs["conf"]).parents[0].name
-        elif len(Path(kwargs["conf"]).parents) > 3:
-            print("Too many depth levels in directory structure")
-            raise RuntimeError
 
-        scan_id = kwargs['scan_id'] if kwargs['scan_id'] is not None else self.conf.get_int('dataset.scan_id', default=-1)
-        if scan_id != -1:
-            self.expname = self.expname + '_{0}'.format(scan_id)
+        scene = kwargs['scene'] if kwargs['scene'] is not None else self.conf.get_int('dataset.scene', default=-1)
+        if scene != -1:
+            self.expname = self.expname + '_{0}'.format(scene)
 
         self.niterations = self.conf.get_int('train.niterations')
         self.finetune_exp = self.conf.get_string("train.finetune_exp", None)
         if self.finetune_exp is not None and not kwargs['is_continue']:
-            self.exp_dir_load = Path("exps") / (self.finetune_exp + '_{0}'.format(scan_id))
+            self.exp_dir_load = Path("exps") / (self.finetune_exp + '_{0}'.format(scene))
         else:
             self.exp_dir_load = self.exps_folder_name / self.expname
 
@@ -89,8 +82,8 @@ class Trainer():
         print('Loading data ...')
 
         dataset_conf = self.conf.get_config('dataset')
-        if kwargs['scan_id'] != -1:
-            dataset_conf['scan_id'] = kwargs['scan_id']
+        if kwargs['scene'] != -1:
+            dataset_conf['scene'] = kwargs['scene']
 
         dataset_conf["nsrc"] = self.conf["train.nviews"]
         dataset_conf["uv_down"] = self.conf.get_int("plot.uv_down")
@@ -160,7 +153,7 @@ class Trainer():
             self.niterations = min(self.niterations, self.start_iteration + 30)
 
         self.train_dataloader = torch.utils.data.DataLoader(self.train_dataset,
-                                                            batch_size=self.batch_size,
+                                                            batch_size=1,
                                                             shuffle=True,
                                                             collate_fn=self.train_dataset.collate_fn,
                                                             pin_memory=True

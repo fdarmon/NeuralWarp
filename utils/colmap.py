@@ -9,7 +9,7 @@ import sqlite3
 import os
 from utils import rend_util
 
-colmap_path = "/home/fdarmon/libs/colmap/build/src/exe/colmap"
+colmap_path = "./colmap"
 
 def read_colmap_dtb_id(path):
     dtb = sqlite3.connect(path / "database.db")

@@ -10,26 +10,18 @@ class SceneDataset(torch.utils.data.Dataset):
     def __init__(self,
                  data_dir,
                  img_res,
-                 scan_id=0,
+                 scene=0,
                  nsrc=0,
                  h_patch_size=None,
                  uv_down=None,
                  ):
 
-        if scan_id.isdigit():
-            self.instance_dir = os.path.join('data', data_dir, 'scan{0}'.format(scan_id))
+        if scene.isdigit():
+            self.instance_dir = os.path.join('data', data_dir, 'scan{0}'.format(scene))
             im_folder_name = "image"
         else:
-            # blended dataset not used for now
-            # with open("datasets/blendedScenes.txt") as f:
-            #     lines = f.readlines()
-            #
-            # lines = [l.strip().split() for l in lines]
-            # scene_keys = {n: k for k, n in lines}
-            # self.instance_dir = os.path.join('data', data_dir, scene_keys[scan_id])
-
-            # strecha
-            self.instance_dir = os.path.join('data', data_dir, scan_id + "_dense")
+            # epfl
+            self.instance_dir = os.path.join('data', data_dir, scene + "_dense")
             im_folder_name = "urd"
 
         self.total_pixels = img_res[0] * img_res[1]
@@ -38,7 +30,7 @@ class SceneDataset(torch.utils.data.Dataset):
         self.generator = torch.Generator()
         self.generator.manual_seed(np.random.randint(1e9))
 
-        assert os.path.exists(self.instance_dir), "Data directory is empty"
+        assert os.path.exists(self.instance_dir), "Data directory is empty" + str(self.instance_dir)
 
         self.sampling_idx = None
         self.small_uv = uv_down is not None

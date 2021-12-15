@@ -6,7 +6,8 @@ from pytorch3d.structures import Meshes
 from pytorch3d.renderer.mesh import rasterizer
 from pytorch3d.renderer.cameras import PerspectiveCameras
 
-def visible_mask(mesh, cams, nb=1):
+def visible_mask(mesh, cams, nb_visible=1):
+    # returns a mask of triangles that reprojects on at least nb_visible images
     num_faces = len(mesh.faces)
     count = torch.zeros(num_faces, device="cuda")
 
@@ -14,7 +15,7 @@ def visible_mask(mesh, cams, nb=1):
 
     n = len(K)
     with torch.no_grad():
-        for i in tqdm(range(n)):
+        for i in tqdm(range(n), desc="Rasterization"):
             intr = torch.zeros((1, 4, 4), device="cuda")
             intr[:, :3, :3] = K[i:i + 1]
             intr[:, 3, 3] = 1
@@ -38,7 +39,7 @@ def visible_mask(mesh, cams, nb=1):
             count[visible_faces[visible_faces > -1]] += 1
 
 
-    return (count > nb).cpu()
+    return (count >= nb_visible).cpu()
 
 # correction from pytorch3d (v0.5.0)
 def corrected_cameras_from_opencv_projection( R, tvec, camera_matrix, image_size):
@@ -90,27 +91,23 @@ def visual_hull_mask(full_points, cams, masks, nb_visible=1):
             in_cam_mask = in_cam_mask & (proj <= 1).all(dim=-1) & (proj >= -1).all(dim=-1)
             is_not_obj_mask = in_cam_mask & ~warped_masks
 
-            res.append((in_cam_mask.sum(dim=1) > nb_visible) & ~(is_not_obj_mask.any(dim=1)))
+            res.append((in_cam_mask.sum(dim=1) >= nb_visible) & ~(is_not_obj_mask.any(dim=1)))
 
     return torch.cat(res)
 
 
 def mesh_filter(args, mesh, masks, cams):
-    nb_visible = args.min_nb_visible - 1
+    nb_visible = args.min_nb_visible
 
-    assert masks is not None, "Only implemented  with masks"
+    vert_hull_mask = visual_hull_mask(torch.from_numpy(mesh.vertices).float().cuda(), cams, masks,
+                                      nb_visible)
+    hull_mask = vert_hull_mask[mesh.faces].all(dim=-1).cpu().numpy()
 
     if args.filter_visible_triangles:
-        inside_mask = visual_hull_mask(torch.from_numpy(mesh.vertices).float().cuda(), cams, masks,
-                                                      nb_visible)
-        inside_mask = inside_mask[mesh.faces].any(dim=-1).cpu().numpy()
         pred_visible_mask = visible_mask(mesh, cams, nb_visible).cpu().numpy()
-        mesh.update_faces(inside_mask & pred_visible_mask)
+        mesh.update_faces(hull_mask & pred_visible_mask)
 
-    else:  # This is how we evaluate on DTU
-        inside_mask = visual_hull_mask(torch.from_numpy(mesh.vertices).float().cuda(), cams, masks)
-        inside_mask = inside_mask[mesh.faces].any(dim=-1).cpu().numpy()
-
-        mesh.update_faces(inside_mask)
+    else:
+        mesh.update_faces(hull_mask)
 
     return mesh

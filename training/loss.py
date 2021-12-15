@@ -8,17 +8,17 @@ from utils.ssim import SSIM
 
 class Loss(nn.Module):
     def __init__(self, warping_weight=0, network_weight=0, eikonal_regularization=None,
-                 patch_loss="ssim", h_patch_size=5, min_visibility=1e-3):
+                 h_patch_size=5, min_visibility=1e-3, patch_loss="ssim"):
 
         super().__init__()
         self.warping_weight = warping_weight
         self.network_weight = network_weight
         self.eikonal_regularization = eikonal_regularization
-        self.patch_loss = patch_loss
         self.ssim = SSIM(h_patch_size).cuda()
         self.patch_offset = rend_util.build_patch_offset(h_patch_size, torch.device("cuda"))
 
         self.min_visibility = min_visibility
+        self.patch_loss = patch_loss
 
     def full_rgb_loss(self, rgb_values, rgb_gt):
         npx, nsrc, _ = rgb_values.shape

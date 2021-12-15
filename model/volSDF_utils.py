@@ -19,7 +19,7 @@ def approx_error_intervals(d_star, sigma, delta, beta):
     # eq (12)
     E_hat = (1 / beta ** 2).view(-1, 1) / 4  * torch.cumsum(delta**2 * torch.exp(-d_star / beta.view(-1, 1)), dim=-1)
 
-    # clamp E_hat --> very high value can go above R_hat when completely occluded
+    # clamp E_hat --> very high value can go above R_hat even if completely occluded
     E_hat = torch.clamp(E_hat, max=100)
     # eq (14)
     return torch.exp(E_hat - R_hat[..., :-1]) - torch.exp(-R_hat[..., :-1])
@@ -84,6 +84,8 @@ class OpacityApproximator(nn.Module):
         new_intervals_dist = intervals_dist[:, :-1].reshape(-1).repeat_interleave(nb_points_plus_1).reshape(Np, -1)
         new_intervals_dist += points_offset * delta.view(-1)[origin_points] / (nb_repeated + 1)
 
+        # fill new sdf values with linear interpolations
+        # --> sdf_to_recompute is a mask of points where this approximation is not valid and we must call implicit_network
         new_sdf_vals = sdf_vals[:, :-1].reshape(-1).repeat_interleave(nb_points_plus_1).reshape(Np, -1)
         new_sdf_vals += points_offset * (
                 sdf_vals[:, 1:].reshape(-1)[origin_points] - sdf_vals[:, :-1].reshape(-1)[origin_points]) / (nb_repeated + 1)

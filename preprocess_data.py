@@ -50,7 +50,7 @@ def compute_src_imgs(images, points3d, R, t, min_triangulation_angle, nsrc):
 
     return sel_ims
 
-def get_calib_strecha(file):
+def get_calib_epfl(file):
     with open(file) as f:
         lines = f.readlines()
 
@@ -89,7 +89,7 @@ def compute_scaling_matrix(R, t, sphere_size):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", choices=["dtu", "strecha"])
+    parser.add_argument("--dataset", choices=["dtu", "epfl"])
     parser.add_argument("--sphere_size", default=3., type=float)
     parser.add_argument("--scene")
     args = parser.parse_args()
@@ -99,8 +99,7 @@ if __name__ == "__main__":
     if dataset == "dtu":
         scene_path = Path("data/DTU") / f"scan{scene}"
     else:
-        scene_path = Path("../strecha") / (scene+"_dense")
-
+        scene_path = Path("data/epfl") / (scene+"_dense")
 
     if  dataset == "dtu":
         sparse_path = scene_path / "sparse"
@@ -117,7 +116,7 @@ if __name__ == "__main__":
         res = dict()
         K, R, t, sizes = list(), list(), list(), list()
         for i in range(nb_imgs):
-            K_i, R_i, t_i, s_i = get_calib_strecha(scene_path / "urd" / (str(i).zfill(4) + ".png.camera"))
+            K_i, R_i, t_i, s_i = get_calib_epfl(scene_path / "urd" / (str(i).zfill(4) + ".png.camera"))
             K.append(K_i)
             R.append(R_i)
             t.append(t_i)
@@ -134,7 +133,7 @@ if __name__ == "__main__":
             f.write(" ".join(res[im]))
             f.write("\n")
 
-    if dataset == "strecha": # compute scaling matrix
+    if dataset == "epfl": # compute scaling matrix
         new_scale_mat = compute_scaling_matrix(R, t, sphere_size=args.sphere_size)
         camera_dict = dict()
         for id_colmap, idx in enumerate(img_order):
