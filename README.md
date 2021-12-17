@@ -42,7 +42,6 @@ A visualization html file is generated for each training in `exps/CONF_SCENE/TIM
 
 ## Acknowledgments
 
-
 This repository is inspired by [IDR](https://github.com/lioryariv/idr)
 
 This work was supported in part by ANR project EnHerit ANR-17-CE23-0008 and was performed using HPC resources from GENCI–IDRIS 2021-AD011011756R1. 
@@ -58,4 +57,4 @@ Modification are allowed for academic research provided that the following condi
   * Redistributions of source code or any format must retain the above copyright notice and this list of conditions.
   * Neither the name of Thales LAS and ENPC nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 ```
- 
+
