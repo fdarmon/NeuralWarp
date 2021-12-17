@@ -317,7 +317,7 @@ class Trainer():
                 for k in loss_output:
                     if k != "loss":
                         str += f", {k} = {loss_output[k].item():.3f}"
-                str += f" Beta: {self.model.implicit_network.beta().item():.3f}"
+                str += f", Beta = {self.model.implicit_network.beta().item():.3f}"
 
                 print(str)
 

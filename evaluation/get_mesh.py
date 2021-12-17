@@ -31,13 +31,14 @@ def get_surface_high_res_mesh(sdf, resolution=100, refine_bb=True, cams=None, ma
     verts = verts + np.array([grid['xyz'][0][0], grid['xyz'][1][0], grid['xyz'][2][0]])
 
     mesh_low_res = trimesh.Trimesh(verts, faces, vertex_normals=normals)
+    mesh_low_res.export("before.ply", "ply")
 
     if not refine_bb:
         return mesh_low_res
 
     # remove from low res mesh triangles with that never projects or outside of visual hull
     visual_hull = mesh_filtering.visual_hull_mask(torch.from_numpy(mesh_low_res.vertices).float().cuda(),
-                                                  cams, masks, nb_visible=0)
+                                                  cams, masks, nb_visible=1)
     face_mask = visual_hull[mesh_low_res.faces].any(axis=1).cpu().numpy()
     face_mask = face_mask & mesh_filtering.visible_mask(mesh_low_res, cams, nb_visible=1).cpu().numpy()
     mesh_low_res.update_faces(face_mask)
@@ -45,6 +46,8 @@ def get_surface_high_res_mesh(sdf, resolution=100, refine_bb=True, cams=None, ma
     components = mesh_low_res.split(only_watertight=False)
     areas = np.array([c.area for c in components], dtype=np.float)
     mesh_low_res = components[areas.argmax()]
+
+    mesh_low_res.export("after.ply", "ply")
 
     recon_pc = trimesh.sample.sample_surface(mesh_low_res, 10000)[0]
     recon_pc = torch.from_numpy(recon_pc).float().cuda()

@@ -19,7 +19,6 @@ class NeuralWarp(nn.Module):
         self.plane_dist_thresh = conf.get_float("plane_dist_thresh")
         self.background_color = conf.get_string("background_color")
 
-        model_bound_sphere = self.bound_sphere
         self.implicit_network = ImplicitNetwork(self.feature_vector_size, **conf.get_config('implicit_network'))
 
         self.network_colors = False

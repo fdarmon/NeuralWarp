@@ -16,7 +16,7 @@ class SceneDataset(torch.utils.data.Dataset):
                  uv_down=None,
                  ):
 
-        if scene.isdigit():
+        if data_dir == "DTU":
             self.instance_dir = os.path.join('data', data_dir, 'scan{0}'.format(scene))
             im_folder_name = "image"
         else:

@@ -106,7 +106,6 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--conf', type=str)
-    parser.add_argument("--dataset", choices=["dtu", 'epfl'])
     parser.add_argument('--timestamp', default='latest', type=str, help='The experiment timestamp to test.')
     parser.add_argument('--checkpoint', default='latest',type=str,help='The trained model checkpoint to test')
     parser.add_argument('--scene', type=str, default=None, help='If set, taken to be the scan id.')

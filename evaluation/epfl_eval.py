@@ -1,19 +1,20 @@
 import open3d as o3d
 import numpy as np
 
-def eval(in_file, scene, dataset_dir, eval_dir):
+
+def eval(in_file, scene, dataset_dir, eval_dir, suffix):
 
     in_mesh = o3d.io.read_triangle_mesh(str(in_file))
 
-    sample = 1e6
+    sample = int(1e6)
     thresh = 0.8
 
-    stl_pcd_large = o3d.io.read_point_cloud(f"{dataset_dir}/{scene}_gt_ours.ply")
-    stl_pcd_centered = o3d.io.read_point_cloud(f"{dataset_dir}/{scene}_gt_centered.ply")
+    stl_pcd_large = o3d.io.read_point_cloud(f"{dataset_dir}/{scene}_dense/gt_full.ply")
+    stl_pcd_centered = o3d.io.read_point_cloud(f"{dataset_dir}/{scene}_dense/gt_center.ply")
 
     in_pcd_large = in_mesh.sample_points_uniformly(sample, seed=0)
 
-    bb_np = np.load(f"{dataset_dir}/bbox_{scene}.npy")
+    bb_np = np.load(f"{dataset_dir}/{scene}_dense/bbox.npy")
     bbox = o3d.geometry.OrientedBoundingBox.create_from_points(o3d.utility.Vector3dVector(bb_np))
 
     idx_pts = bbox.get_point_indices_within_bounding_box(o3d.utility.Vector3dVector(np.asarray(in_mesh.vertices)))
@@ -36,7 +37,7 @@ def eval(in_file, scene, dataset_dir, eval_dir):
         print(res.min(), res.mean(), res.max(), res[res < thresh].mean())
         result[name] = (res, res[res < thresh].mean())
 
-    with open(f'{eval_dir}/result.txt', 'w') as f:
+    with open(f'{eval_dir}/result{suffix}.txt', 'w') as f:
         f.write(f'{result["pred2stl"][1]} {result["stl2pred"][1]} {(result["pred2stl"][1]+result["stl2pred"][1])/2}\n')
         f.write(
             f'{result["pred2stl_centered"][1]} {result["stl2pred_centered"][1]} {(result["pred2stl_centered"][1] + result["stl2pred_centered"][1]) / 2}')

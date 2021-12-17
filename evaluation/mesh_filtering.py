@@ -75,6 +75,7 @@ def visual_hull_mask(full_points, cams, masks, nb_visible=1):
     # K, R: N * 3 * 3 // t: N * 3 * 1; sizes N*2; points n*3; masks: N * h * w
     K, R, t, sizes = cams[:4]
     res = list()
+
     with torch.no_grad():
         for points in torch.split(full_points, 100000):
             n = points.shape[0]
