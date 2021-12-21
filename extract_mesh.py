@@ -120,7 +120,7 @@ if __name__ == '__main__':
     parser.add_argument('--min_nb_visible', type=int, default=2, help="Minimum number of images used for visual hull"
                                                                       "filtering and triangle visibility filtering")
     parser.add_argument("--no_masks", action="store_true", help="Ignore the visual hull masks")
-    parser.add_argument("--dilation_radius", type=int, default=50)
+    parser.add_argument("--dilation_radius", type=int, default=12)
     parser.add_argument("--suffix", default="")
     args = parser.parse_args()
 
