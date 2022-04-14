@@ -1,8 +1,14 @@
-# NeuralWarp: Improving neural implicit surfaces geometry with patch warping
+# NeuralWarp: Improving neural implicit surfaces geometry with patch warping (CVPR22)
 
 ## [Project page](http://imagine.enpc.fr/~darmonf/NeuralWarp/) | [Paper](https://arxiv.org/pdf/2112.09648.pdf)
 Code release of paper Improving neural implicit surfaces geometry with patch warping\
 [François Darmon](http://imagine.enpc.fr/~darmonf), Bénédicte Bascle, Jean-Clément Devaux, [Pascal Monasse](https://imagine.enpc.fr:/monasse) and [Mathieu Aubry](http://imagine.enpc.fr/~aubrym/)
+
+
+
+https://user-images.githubusercontent.com/19487907/163433648-9e8a301b-4815-47f9-8a05-5d7da1e0f4a9.mp4
+
+
 
 ## Installation
 
@@ -48,7 +54,7 @@ A visualization html file is generated for each training in `exps/CONF_SCENE/TIM
 This repository is inspired by [IDR](https://github.com/lioryariv/idr)
 
 This work was supported in part by ANR project EnHerit ANR-17-CE23-0008 and was performed using HPC resources from GENCI–IDRIS 2021-AD011011756R1. 
-We thank [Tom Monnier](http://imagine.enpc.fr/~monniert) for valuable feedback and Jingyang Zhang for sending MVSDF results. 
+We thank [Tom Monnier](http://imagine.enpc.fr/~monniert) and [Bruno Lecouat](https://bruno-31.github.io/) for valuable feedback, and Jingyang Zhang for sending MVSDF results. 
 
 ## Copyright
 ```
