@@ -6,7 +6,7 @@ Code release of paper Improving neural implicit surfaces geometry with patch war
 
 
 
-https://user-images.githubusercontent.com/19487907/163433648-9e8a301b-4815-47f9-8a05-5d7da1e0f4a9.mp4
+![results](teaser.gif)
 
 
 
