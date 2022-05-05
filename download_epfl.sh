@@ -1,4 +1,4 @@
-mkdir -p epfl
+mkdir -p data
 
 cd data
 
